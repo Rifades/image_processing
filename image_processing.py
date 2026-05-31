@@ -213,7 +213,7 @@ if uploaded_file is not None:
     raw_image = Image.open(uploaded_file).convert("RGBA")
     
     with col1:
-        st.image(raw_image, caption="Original Image", use_container_width=True)
+        st.image(raw_image, caption="Original Image", width="stretch")
         st.divider()
         
         process_button = st.button("🎨 Process Image Locally", type="primary", use_container_width=True)
@@ -241,7 +241,7 @@ if uploaded_file is not None:
     if st.session_state.processing_done and st.session_state.processed_image:
         with col2:
             st.subheader("📊 Result")
-            st.image(st.session_state.processed_image, caption="Enhanced Product", use_container_width=True)
+            st.image(st.session_state.processed_image, caption="Enhanced Product", width="stretch")
             
             st.divider()
             
