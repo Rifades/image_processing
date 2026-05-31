@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image, ImageFilter, ImageEnhance
 import io
 from typing import Optional, Tuple
-from rembg import remove, new_session
 import requests
 import base64
 
@@ -54,6 +53,8 @@ SHADOW_STYLES = [
 @st.cache_resource
 def get_rembg_session():
     """Loads the lightweight AI model once and keeps it in memory to drastically speed up processing."""
+    # LAZY IMPORT: Only loads when this function is called
+    from rembg import new_session 
     return new_session("u2netp")
 
 # ==========================================
@@ -117,6 +118,8 @@ def apply_lighting(img: Image.Image, style: str) -> Image.Image:
 
 def process_product_image(image: Image.Image, bg_name: str, shadow_name: str, lighting_name: str) -> Image.Image:
     """Main processing pipeline: Remove BG -> Light -> Shadow -> Add new BG"""
+    # LAZY IMPORT: Only loads when the button is clicked
+    from rembg import remove 
     
     # Use the cached, fast AI model
     session = get_rembg_session()
