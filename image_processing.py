@@ -13,12 +13,15 @@ import base64
 st.set_page_config(page_title="Local Product Photo Studio", page_icon="✨", layout="wide")
 
 # ==========================================
-# CONFIGURATION
+# CONFIGURATION & SECRETS
 # ==========================================
-# OPTIMIZATION: Pull API key from Streamlit Secrets to prevent exposing it in public repos
-# Set this up in Streamlit Cloud Dashboard -> App Settings -> Secrets
-# Example secret format: IMGBB_API_KEY = "your_actual_key_here"
-IMGBB_API_KEY = st.secrets.get("IMGBB_API_KEY", "YOUR_API_KEY_HERE") 
+# Safely try to load the API key. 
+# This prevents crashes when running locally without a secrets.toml file.
+try:
+    IMGBB_API_KEY = st.secrets.get("IMGBB_API_KEY", "")
+except (FileNotFoundError, KeyError):
+    # Fallback if running locally without a secrets file
+    IMGBB_API_KEY = "" 
 
 # OPTIMIZATION: Reduced from 2048 to 1024 to prevent cloud server crashes
 MAX_IMAGE_SIZE = 1024 
@@ -265,8 +268,8 @@ if uploaded_file is not None:
                 
             with dl_col3:
                 if st.button("🔗 Create Shareable Link", use_container_width=True):
-                    if IMGBB_API_KEY == "YOUR_API_KEY_HERE" or not IMGBB_API_KEY.strip():
-                        st.error("Missing ImgBB API key! Set it in Streamlit Cloud Secrets.")
+                    if not IMGBB_API_KEY:
+                        st.error("Missing ImgBB API key! Set it in Streamlit Cloud Secrets or local secrets.toml.")
                     else:
                         with st.spinner("Uploading to cloud..."):
                             link = upload_to_imgbb(image_bytes, IMGBB_API_KEY)
