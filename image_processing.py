@@ -7,10 +7,18 @@ import requests
 import base64
 
 # ==========================================
-# HARDCODED CONFIGURATION
+# STREAMLIT PAGE CONFIGURATION
 # ==========================================
-# WARNING: If you make your GitHub repo "Public", anyone can see this key!
-IMGBB_API_KEY = "20eab0dd20d4cdc0c594fadb8e833728" 
+# MUST be the very first Streamlit command in the script!
+st.set_page_config(page_title="Local Product Photo Studio", page_icon="✨", layout="wide")
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+# OPTIMIZATION: Pull API key from Streamlit Secrets to prevent exposing it in public repos
+# Set this up in Streamlit Cloud Dashboard -> App Settings -> Secrets
+# Example secret format: IMGBB_API_KEY = "your_actual_key_here"
+IMGBB_API_KEY = st.secrets.get("IMGBB_API_KEY", "YOUR_API_KEY_HERE") 
 
 # OPTIMIZATION: Reduced from 2048 to 1024 to prevent cloud server crashes
 MAX_IMAGE_SIZE = 1024 
@@ -155,8 +163,6 @@ def upload_to_imgbb(image_bytes: bytes, api_key: str) -> str:
 # ==========================================
 # STREAMLIT UI
 # ==========================================
-st.set_page_config(page_title="Local Product Photo Studio", page_icon="✨", layout="wide")
-
 st.markdown("""
 <style>
     .main-header { text-align: center; padding: 1rem 0; }
@@ -259,8 +265,8 @@ if uploaded_file is not None:
                 
             with dl_col3:
                 if st.button("🔗 Create Shareable Link", use_container_width=True):
-                    if not IMGBB_API_KEY.strip():
-                        st.error("Missing ImgBB API key at the top of the script!")
+                    if IMGBB_API_KEY == "YOUR_API_KEY_HERE" or not IMGBB_API_KEY.strip():
+                        st.error("Missing ImgBB API key! Set it in Streamlit Cloud Secrets.")
                     else:
                         with st.spinner("Uploading to cloud..."):
                             link = upload_to_imgbb(image_bytes, IMGBB_API_KEY)
